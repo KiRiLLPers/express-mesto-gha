@@ -1,6 +1,10 @@
 const express = require('express');
 
+const { DB_URL = 'mongodb://localhost:27017/mestodb' } = process.env;
+
 const bodyParser = require('body-parser');
+
+const mongoose = require('mongoose');
 
 const routerUsers = require('./routes/users');
 
@@ -8,14 +12,22 @@ const routerCards = require('./routes/cards');
 
 const { ErrorNotFound } = require('./errors/errorNotFound');
 
-const { connect } = require('./database/mongo');
-
 const { PORT = 3000 } = process.env;
 const app = express();
 const errorNotFound = new ErrorNotFound();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+const connect = async () => {
+  try {
+    await mongoose.connect(DB_URL, {
+      useNewUrlParser: true,
+    });
+  } catch (err) {
+    console.log(err.message);
+  }
+};
 
 connect().then(() => {
   console.log('connected');
