@@ -22,12 +22,6 @@ module.exports.getUsers = (req, res) => {
 
 module.exports.getUserId = (req, res) => {
   const { userId } = req.params.userId;
-  if (!userId) {
-    res
-      .status(userBadRequest.statusCode)
-      .send({ message: 'Не передан userId' });
-    return;
-  }
   if (userId.length !== MONGO_ID_LENGTH) {
     res
       .status(userBadRequest.statusCode)
