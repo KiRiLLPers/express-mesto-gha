@@ -25,13 +25,13 @@ module.exports.getUserId = (req, res) => {
   if (!userId) {
     res
       .status(userBadRequest.statusCode)
-      .send({ message: new ErrorBadRequest('Не передан userId') });
+      .send({ message: 'Не передан userId' });
     return;
   }
   if (userId.length !== MONGO_ID_LENGTH) {
     res
       .status(userBadRequest.statusCode)
-      .send({ message: new ErrorBadRequest('Некорректный _id') });
+      .send({ message: 'Некорректный _id' });
     return;
   }
   if (userId.length === MONGO_ID_LENGTH) {
@@ -40,7 +40,7 @@ module.exports.getUserId = (req, res) => {
         if (!user) {
           res
             .status(userNotFound.statusCode)
-            .send({ message: new ErrorNotFound('Пользователь по указанному _id не найден.') });
+            .send({ message: 'Пользователь по указанному _id не найден.' });
           return;
         }
         res.status(200).send(user);
@@ -56,7 +56,7 @@ module.exports.createUser = (req, res) => {
   if (!name || !about || !avatar) {
     res
       .status(userBadRequest.statusCode)
-      .send({ message: new ErrorBadRequest('Переданы некорректные данные при создании пользователя.') });
+      .send({ message: 'Переданы некорректные данные при создании пользователя.' });
     return;
   }
   User.create({ name, about, avatar })
@@ -65,7 +65,7 @@ module.exports.createUser = (req, res) => {
       if (err.name === 'ValidationError') {
         res
           .status(userValidationError.statusCode)
-          .send({ message: new ErrorValidation(err.message) });
+          .send({ message: err.message });
       }
       res.status(500).send({ message: 'На сервере произошла ошибка' });
     });
@@ -76,7 +76,7 @@ module.exports.updateUser = (req, res) => {
   if (!name || !about) {
     res
       .status(userBadRequest.statusCode)
-      .send({ message: new ErrorBadRequest('Переданы некорректные данные при обновлении профиля.') });
+      .send({ message: 'Переданы некорректные данные при обновлении профиля.' });
     return;
   }
   if (req.user._id) {
@@ -86,11 +86,11 @@ module.exports.updateUser = (req, res) => {
         if (err.name === 'ValidationError') {
           res
             .status(userValidationError.statusCode)
-            .send({ message: new ErrorValidation(err.message) });
+            .send({ message: err.message });
         } else {
           res
             .status(userNotFound.statusCode)
-            .send({ message: new ErrorNotFound('Пользователь по указанному _id не найден.') });
+            .send({ message: 'Пользователь по указанному _id не найден.' });
         }
       });
   } else {
@@ -105,7 +105,7 @@ module.exports.updateAvatar = (req, res) => {
   if (!avatar) {
     res
       .status(userBadRequest.statusCode)
-      .send({ message: new ErrorBadRequest('Переданы некорректные данные при обновлении Аватара.') });
+      .send({ message: 'Переданы некорректные данные при обновлении Аватара.' });
   }
   if (req.user._id) {
     User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
@@ -114,11 +114,11 @@ module.exports.updateAvatar = (req, res) => {
         if (err.name === 'ValidationError') {
           res
             .status(userValidationError.statusCode)
-            .send({ message: new ErrorValidation(err.message) });
+            .send({ message: err.message });
         } else {
           res
             .status(userNotFound.statusCode)
-            .send({ message: new ErrorNotFound('Пользователь по указанному _id не найден.') });
+            .send({ message: 'Пользователь по указанному _id не найден.' });
         }
       });
   } else res.status(500).send({ message: 'На сервере произошла ошибка' });

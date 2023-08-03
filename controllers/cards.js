@@ -23,7 +23,7 @@ module.exports.createCard = (req, res) => {
   if (!name || !link) {
     res
       .status(cardBadRequest.statusCode)
-      .send({ message: new ErrorBadRequest('Переданы некорректные данные при создании новой карточки.') });
+      .send({ message: 'Переданы некорректные данные при создании новой карточки.' });
     return;
   }
   Card.create({ name, link, owner: req.user._id })
@@ -32,7 +32,7 @@ module.exports.createCard = (req, res) => {
       if (err.name === 'ValidationError') {
         res
           .status(cardValidationError.statusCode)
-          .send({ message: new ErrorValidation(err.message) });
+          .send({ message: err.message });
       } else res.status(500).send({ message: 'На сервере произошла ошибка' });
     });
 };
@@ -42,7 +42,7 @@ module.exports.deleteCard = (req, res) => {
   if (cardId.length !== MONGO_ID_LENGTH) {
     res
       .status(cardBadRequest.statusCode)
-      .send({ message: new ErrorBadRequest('Некорректный _id') });
+      .send({ message: 'Некорректный _id' });
     return;
   }
   if (cardId.length === MONGO_ID_LENGTH) {
@@ -51,7 +51,7 @@ module.exports.deleteCard = (req, res) => {
         if (!card) {
           res
             .status(cardNotFound.statusCode)
-            .send({ message: new ErrorNotFound('Карточка с указанным _id не найдена.') });
+            .send({ message: 'Карточка с указанным _id не найдена.' });
           return;
         }
         res.status(200).send({ message: 'Карточка удалена!' });
@@ -59,7 +59,7 @@ module.exports.deleteCard = (req, res) => {
       .catch(() => {
         res
           .status(cardNotFound.statusCode)
-          .send({ message: new ErrorNotFound('Карточка с указанным _id не найдена.') });
+          .send({ message: 'Карточка с указанным _id не найдена.' });
       });
   }
 };
@@ -69,7 +69,7 @@ module.exports.likeCard = (req, res) => {
   if (cardId.length !== MONGO_ID_LENGTH) {
     res
       .status(cardBadRequest.statusCode)
-      .send({ message: new ErrorBadRequest('Некорректный _id') });
+      .send({ message: 'Некорректный _id' });
     return;
   }
   if (cardId.length === MONGO_ID_LENGTH) {
@@ -78,7 +78,7 @@ module.exports.likeCard = (req, res) => {
         if (!card) {
           res
             .status(cardNotFound.statusCode)
-            .send({ message: new ErrorNotFound('Карточка с указанным _id не найдена.') });
+            .send({ message: 'Карточка с указанным _id не найдена.' });
           return;
         }
         res.status(200).send(card);
@@ -92,7 +92,7 @@ module.exports.dislikeCard = (req, res) => {
   if (cardId.length !== MONGO_ID_LENGTH) {
     res
       .status(cardBadRequest.statusCode)
-      .send({ message: new ErrorBadRequest('Некорректный _id') });
+      .send({ message: 'Некорректный _id' });
     return;
   }
   if (cardId.length === MONGO_ID_LENGTH) {
@@ -101,7 +101,7 @@ module.exports.dislikeCard = (req, res) => {
         if (!card) {
           res
             .status(cardNotFound.statusCode)
-            .send({ message: new ErrorNotFound('Карточка с указанным _id не найдена.') });
+            .send({ message: 'Карточка с указанным _id не найдена.' });
           return;
         }
         res.status(200).send(card);
