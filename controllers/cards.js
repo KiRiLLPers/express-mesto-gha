@@ -72,7 +72,6 @@ module.exports.likeCard = (req, res) => {
       .send({ message: 'Некорректный _id' });
     return;
   }
-  
   if (cardId.length === MONGO_ID_LENGTH) {
     Card.findByIdAndUpdate(cardId, { $addToSet: { likes: req.user._id } }, { new: true })
       .then((card) => {
