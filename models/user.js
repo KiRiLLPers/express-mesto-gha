@@ -16,10 +16,6 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     required: [true, 'Поле avatar должно быть заполнено'],
-    validate: {
-      validator: (v) => /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_+.~#?&=]*)$/.test(v),
-      message: 'Поле должно содержать url',
-    },
   },
 }, { versionKey: false });
 
