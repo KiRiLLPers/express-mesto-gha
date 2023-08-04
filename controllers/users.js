@@ -21,14 +21,13 @@ module.exports.getUsers = (req, res) => {
 };
 
 module.exports.getUserId = (req, res) => {
-  const { userId } = req.params.userId;
-  if (userId.length !== MONGO_ID_LENGTH) {
+  if (req.params.userId.length !== MONGO_ID_LENGTH) {
     res
       .status(userBadRequest.statusCode)
       .send({ message: 'Некорректный _id' });
     return;
   }
-  if (userId.length === MONGO_ID_LENGTH) {
+  if (req.params.userId.length === MONGO_ID_LENGTH) {
     User.findById(req.params.userId)
       .then((user) => {
         if (!user) {

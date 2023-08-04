@@ -38,15 +38,14 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
-  const { cardId } = req.params.cardId;
-  if (cardId.length !== MONGO_ID_LENGTH) {
+  if (req.params.cardId.length !== MONGO_ID_LENGTH) {
     res
       .status(cardBadRequest.statusCode)
       .send({ message: 'Некорректный _id' });
     return;
   }
-  if (cardId.length === MONGO_ID_LENGTH) {
-    Card.findByIdAndRemove(cardId)
+  if (req.params.cardId.length === MONGO_ID_LENGTH) {
+    Card.findByIdAndRemove(req.params.cardId)
       .then((card) => {
         if (!card) {
           res
@@ -65,15 +64,14 @@ module.exports.deleteCard = (req, res) => {
 };
 
 module.exports.likeCard = (req, res) => {
-  const { cardId } = req.params.cardId;
-  if (cardId.length !== MONGO_ID_LENGTH) {
+  if (req.params.cardId.length !== MONGO_ID_LENGTH) {
     res
       .status(cardBadRequest.statusCode)
       .send({ message: 'Некорректный _id' });
     return;
   }
-  if (cardId.length === MONGO_ID_LENGTH) {
-    Card.findByIdAndUpdate(cardId, { $addToSet: { likes: req.user._id } }, { new: true })
+  if (req.params.cardId.length === MONGO_ID_LENGTH) {
+    Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
       .then((card) => {
         if (!card) {
           res
@@ -88,15 +86,14 @@ module.exports.likeCard = (req, res) => {
 };
 
 module.exports.dislikeCard = (req, res) => {
-  const { cardId } = req.params.cardId;
-  if (cardId.length !== MONGO_ID_LENGTH) {
+  if (req.params.cardId.length !== MONGO_ID_LENGTH) {
     res
       .status(cardBadRequest.statusCode)
       .send({ message: 'Некорректный _id' });
     return;
   }
-  if (cardId.length === MONGO_ID_LENGTH) {
-    Card.findByIdAndUpdate(cardId, { $pull: { likes: req.user._id } }, { new: true })
+  if (req.params.cardId.length === MONGO_ID_LENGTH) {
+    Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
       .then((card) => {
         if (!card) {
           res
