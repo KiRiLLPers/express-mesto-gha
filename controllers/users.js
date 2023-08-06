@@ -21,25 +21,27 @@ module.exports.getUsers = (req, res) => {
 };
 
 module.exports.getUserId = (req, res) => {
-  if (req.params.userId.length !== MONGO_ID_LENGTH) {
+  const { userId } = req.params;
+  if (userId.length !== MONGO_ID_LENGTH) {
     res
       .status(userBadRequest.statusCode)
       .send({ message: 'Некорректный _id' });
     return;
   }
-  if (req.params.userId.length === MONGO_ID_LENGTH) {
-    User.findById(req.params.userId)
+  if (userId.length === MONGO_ID_LENGTH) {
+    User.findById(userId)
+      .orFail()
       .then((user) => {
-        if (!user) {
+        res.status(200).send(user);
+      })
+      .catch((err) => {
+        if (err.name === 'DocumentNotFoundError') {
           res
             .status(userNotFound.statusCode)
             .send({ message: 'Пользователь по указанному _id не найден.' });
-          return;
+        } else {
+          res.status(500).send({ message: 'На сервере произошла ошибка' });
         }
-        res.status(200).send(user);
-      })
-      .catch(() => {
-        res.status(500).send({ message: 'На сервере произошла ошибка' });
       });
   }
 };
@@ -53,7 +55,7 @@ module.exports.createUser = (req, res) => {
     return;
   }
   User.create({ name, about, avatar })
-    .then((user) => res.status(200).send(user))
+    .then((user) => res.status(201).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res
