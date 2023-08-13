@@ -15,6 +15,7 @@ const { ErrorBadRequest } = require('../errors/errorBadRequest');
 const { ErrorValidation } = require('../errors/errorValidation');
 
 const { ErrorConflict } = require('../errors/errorConflict');
+const { ErrorUnAuthorization } = require('../errors/errorUnAuthorization');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -137,7 +138,10 @@ module.exports.login = (req, res, next) => {
         .status(200)
         .send({ token });
     })
-    .catch((err) => next(err));
+    .catch((err) => {
+      next(new ErrorUnAuthorization('Неверные почта или пароль'));
+      next(err);
+    });
 };
 
 module.exports.getUserMe = (req, res, next) => {
