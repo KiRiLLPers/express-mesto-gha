@@ -60,7 +60,18 @@ module.exports.createUser = (req, res, next) => {
         avatar,
         email,
         password: hash,
-      }).then((user) => res.status(201).send({ name, about, avatar, email }))
+      }).then((user) => {
+        const { _id } = user;
+        res.status(201).send(
+          {
+            _id,
+            name,
+            about,
+            avatar,
+            email,
+          },
+        );
+      })
         .catch((err) => {
           if (err.name === 'MongoServerError' || err.code === 11000) {
             next(new ErrorConflict('Пользователь с таким email уже существует!'));
