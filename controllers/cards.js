@@ -32,8 +32,9 @@ module.exports.createCard = (req, res, next) => {
 
 module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
+  console.log(req.user._id);
   Card.findByIdAndRemove(cardId)
-    .orFail()
+    // .orFail()
     .then((card) => {
       if (req.user._id !== card.owner._id.toString()) {
         next(new ErrorForbidden('Нельзя удалять чужую карточку!'));
