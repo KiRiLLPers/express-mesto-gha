@@ -6,11 +6,16 @@ const bodyParser = require('body-parser');
 
 const mongoose = require('mongoose');
 
-const routerUsers = require('./routes/users');
+const { celebrate, Joi, errors } = require('celebrate');
 
-const routerCards = require('./routes/cards');
+const router = require('./routes');
+const auth = require('./middlewares/auth');
+const { login, createUser } = require('./controllers/users');
+const handleError = require('./errors/handleError');
 
-const { PORT = 3000, DB_URL = 'mongodb://localhost:27017/mestodb' } = process.env;
+require('dotenv').config();
+
+const { PORT = 3000, MONGODB_URL = 'mongodb://localhost:27017/mestodb' } = process.env;
 const app = express();
 app.use(helmet());
 
@@ -19,7 +24,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const connect = async () => {
   try {
-    await mongoose.connect(DB_URL, {
+    await mongoose.connect(MONGODB_URL, {
       useNewUrlParser: true,
     });
   } catch (err) {
@@ -30,18 +35,41 @@ const connect = async () => {
 connect().then(() => {
   console.log('connected');
 });
-app.use((req, res, next) => {
-  req.user = {
-    _id: '64bd459240fd47e06c1f4e95',
-  };
 
-  next();
-});
-app.use(routerUsers);
-app.use(routerCards);
+app.post(
+  '/signin',
+  celebrate({
+    body: Joi.object().keys({
+      email: Joi.string().required().email(),
+      password: Joi.string().required(),
+    }),
+  }),
+  login,
+);
+
+app.post(
+  '/signup',
+  celebrate({
+    body: Joi.object().keys({
+      email: Joi.string().required().email(),
+      password: Joi.string().required(),
+      name: Joi.string().min(2).max(30),
+      about: Joi.string().min(2).max(30),
+      avatar: Joi.string().pattern(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/),
+    }),
+  }),
+  createUser,
+);
+
+app.use(auth);
+
+app.use(router);
 app.use('*', (req, res) => {
   res.status(404).send({ message: 'Страница не найдена' });
 });
+
+app.use(errors());
+app.use(handleError);
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
 });

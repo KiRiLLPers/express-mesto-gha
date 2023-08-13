@@ -1,3 +1,3 @@
 module.exports = {
-  MONGO_ID_LENGTH: 24,
+  SALT_ROUND: 10,
 };
