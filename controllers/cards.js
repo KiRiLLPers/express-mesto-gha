@@ -59,7 +59,12 @@ module.exports.likeCard = (req, res, next) => {
       }
       res.status(200).send(card);
     })
-    .catch((err) => next(err));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new ErrorNotFound('Карточки с указанным id не существует.'));
+      }
+      next(err);
+    });
 };
 
 module.exports.dislikeCard = (req, res, next) => {

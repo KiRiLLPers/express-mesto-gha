@@ -38,11 +38,11 @@ router.delete(
 
 router.put(
   '/:cardId/likes',
-  celebrate({
-    params: Joi.object().keys({
-      cardId: Joi.string().length(24).hex().required(),
-    }),
-  }),
+  // celebrate({
+  //   params: Joi.object().keys({
+  //     cardId: Joi.string().length(24).hex().required(),
+  //   }),
+  // }),
   likeCard,
 );
 
