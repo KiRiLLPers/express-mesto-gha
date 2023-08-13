@@ -143,7 +143,7 @@ module.exports.login = (req, res, next) => {
 };
 
 module.exports.getUserMe = (req, res, next) => {
-  const { _id } = req.body;
+  const { _id } = req.user;
 
   User.find({ _id })
     .then((user) => {
@@ -151,7 +151,7 @@ module.exports.getUserMe = (req, res, next) => {
         next(new ErrorNotFound('Пользователь по указанному _id не найден.'));
       }
 
-      res.send(user);
+      res.status(200).send(user);
     })
     .catch((err) => next(err));
 };

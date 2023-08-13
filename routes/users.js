@@ -15,6 +15,11 @@ router.get(
 );
 
 router.get(
+  '/me',
+  getUserMe,
+);
+
+router.get(
   '/:userId',
   celebrate({
     params: Joi.object().keys({
@@ -22,10 +27,6 @@ router.get(
     }),
   }),
   getUserId,
-);
-router.get(
-  '/me',
-  getUserMe,
 );
 
 router.patch(
