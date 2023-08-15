@@ -34,6 +34,7 @@ module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
 
   Card.findById(cardId)
+    .orFail()
     .then((card) => {
       if (req.user._id !== card.owner._id.toString()) {
         next(new ErrorForbidden('Нельзя удалять чужую карточку!'));
@@ -52,7 +53,12 @@ module.exports.deleteCard = (req, res, next) => {
           });
       }
     })
-    .catch((err) => next(err));
+    .catch((err) => {
+      if (err.name === 'DocumentNotFoundError') {
+        next(new ErrorNotFound('Карточка с указанным _id не найдена.'));
+      }
+      next(err);
+    });
 };
 
 module.exports.likeCard = (req, res, next) => {
