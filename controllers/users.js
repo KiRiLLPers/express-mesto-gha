@@ -148,10 +148,10 @@ module.exports.getUserMe = (req, res, next) => {
   User.find({ _id })
     .then((user) => {
       if (!user) {
-        next(new ErrorNotFound('Пользователь по указанному _id не найден.'));
+        return next(new ErrorNotFound('Пользователь по указанному _id не найден.'));
       }
 
-      res.status(200).send(user);
+      return res.status(200).send(user);
     })
     .catch((err) => next(err));
 };

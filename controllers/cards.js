@@ -32,9 +32,8 @@ module.exports.createCard = (req, res, next) => {
 
 module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
-  console.log(req.user._id);
   Card.findByIdAndRemove(cardId)
-    // .orFail()
+    .orFail()
     .then((card) => {
       if (req.user._id !== card.owner._id.toString()) {
         next(new ErrorForbidden('Нельзя удалять чужую карточку!'));
@@ -54,6 +53,7 @@ module.exports.likeCard = (req, res, next) => {
   const { cardId } = req.params;
 
   Card.findByIdAndUpdate(cardId, { $addToSet: { likes: req.user._id } }, { new: true })
+    .orFail()
     .then((card) => {
       if (!card) {
         next(new ErrorNotFound('Карточка с указанным _id не найдена.'));
@@ -61,6 +61,9 @@ module.exports.likeCard = (req, res, next) => {
       res.status(200).send(card);
     })
     .catch((err) => {
+      if (err.name === 'DocumentNotFoundError') {
+        next(new ErrorNotFound('Карточки с указанным id не существует.'));
+      }
       if (err.name === 'CastError') {
         next(new ErrorNotFound('Карточки с указанным id не существует.'));
       }
