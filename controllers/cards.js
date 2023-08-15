@@ -32,21 +32,27 @@ module.exports.createCard = (req, res, next) => {
 
 module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
-  Card.findByIdAndRemove(cardId)
-    .orFail()
+
+  Card.findById(cardId)
     .then((card) => {
       if (req.user._id !== card.owner._id.toString()) {
         next(new ErrorForbidden('Нельзя удалять чужую карточку!'));
-      }
-      res.status(200).send({ message: 'Карточка удалена!' });
-    })
-    .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') {
-        next(new ErrorNotFound('Карточка с указанным _id не найдена.'));
-      }
+      } else {
+        Card.findByIdAndRemove(cardId)
+          .orFail()
+          .then(() => {
+            res.status(200).send({ message: 'Карточка удалена!' });
+          })
+          .catch((err) => {
+            if (err.name === 'DocumentNotFoundError') {
+              next(new ErrorNotFound('Карточка с указанным _id не найдена.'));
+            }
 
-      next(err);
-    });
+            next(err);
+          });
+      }
+    })
+    .catch((err) => next(err));
 };
 
 module.exports.likeCard = (req, res, next) => {
