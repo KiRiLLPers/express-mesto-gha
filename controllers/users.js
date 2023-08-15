@@ -151,7 +151,7 @@ module.exports.getUserMe = (req, res, next) => {
         return next(new ErrorNotFound('Пользователь по указанному _id не найден.'));
       }
 
-      return res.status(200).send(user);
+      return res.status(200).send(...user);
     })
     .catch((err) => next(err));
 };
