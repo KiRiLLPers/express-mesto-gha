@@ -75,11 +75,17 @@ module.exports.dislikeCard = (req, res, next) => {
   const { cardId } = req.params;
 
   Card.findByIdAndUpdate(cardId, { $pull: { likes: req.user._id } }, { new: true })
+    .orFail()
     .then((card) => {
       if (!card) {
         next(new ErrorNotFound('Карточка с указанным _id не найдена.'));
       }
       res.status(200).send(card);
     })
-    .catch((err) => next(err));
+    .catch((err) => {
+      if (err.name === 'DocumentNotFoundError') {
+        next(new ErrorNotFound('Карточка с указанным _id не найдена.'));
+      }
+      next(err);
+    });
 };
